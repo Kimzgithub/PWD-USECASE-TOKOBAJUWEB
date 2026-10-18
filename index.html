@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Beranda — ABYSSAL</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body data-page="home">
+    <section
+      class="hero"
+      id="hero"
+      aria-roledescription="carousel"
+      aria-label="Sorotan koleksi"
+    >
+      <button class="ar l" id="pv" aria-label="Slide sebelumnya">
+        <i data-lucide="chevron-left"></i>
+      </button>
+      <button class="ar r" id="nx" aria-label="Slide berikutnya">
+        <i data-lucide="chevron-right"></i>
+      </button>
+      <div class="dots" id="dots"></div>
+    </section>
+    <main class="px home">
+      <div class="sh">
+        <h2>Featured</h2>
+        <a href="jurnal.html">LIHAT JURNAL</a>
+      </div>
+      <div class="fg2" id="fe"></div>
+      <div class="sh">
+        <h2>Featured Products</h2>
+        <a href="store.html">LIHAT SEMUA</a>
+      </div>
+      <div class="row g-4" id="fp"></div>
+    </main>
+    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+      /* Ganti '' dengan URL fotomu. Kosong = placeholder. Format: [url, label, warna] */
+      const HERO = [
+        ["", "Tampilan 1", "#4a0a0a"],
+        ["", "Tampilan 2", "#6b3a0a"],
+        ["", "Tampilan 3", "#14325a"],
+        ["", "Tampilan 4", "#2a0a3a"],
+        ["", "Tampilan 5", "#0a3a2a"],
+        ["", "Tampilan 6", "#5a0000"],
+        ["", "Tampilan 7", "#3a2a00"],
+        ["", "Tampilan 8", "#1a1a3a"],
+        ["", "Tampilan 9", "#4a1a2a"],
+        ["", "Tampilan 10", "#0a2a3a"],
+      ];
+      /* Format: [url, label, warna, jenis, judul, ikon] */
+      const FEAT = [
+        [
+          "",
+          "Foto kolaborasi",
+          "#2a0a3a",
+          "KOLABORASI",
+          "Abyssal × Studio Kelam: Koleksi Urat Purba",
+          "handshake",
+        ],
+        [
+          "",
+          "Foto kolaborasi",
+          "#0a1a3a",
+          "KOLABORASI",
+          "The Age of Penumbra, Edisi Bersama Ilustrator Lokal",
+          "pen-tool",
+        ],
+        [
+          "",
+          "Foto kolaborasi",
+          "#3a1a00",
+          "KOLABORASI",
+          "Sarung Tangan Rajut × Perajin Lokal, Rilis Terbatas",
+          "hand",
+        ],
+        [
+          "",
+          "Foto kolaborasi",
+          "#5a0000",
+          "MERCH",
+          "Kaos Tur Bersama Band Doom Metal Tanah Air",
+          "mic",
+        ],
+      ];
+      const PROD = [
+        [1, "Auskar", 129000, "gem"],
+        [2, "Skelebiner AB", 99000, "link"],
+        [3, "Skelebiner AS", 99000, "link"],
+        [4, "Skelebiner SC", 99000, "link"],
+        [5, "Sarung Tangan Rajut", 149000, "hand"],
+        [7, "Celana Kargo Hitam", 399000, "layers"],
+        [8, "Kemeja Flanel Hitam", 359000, "shirt"],
+        [6, "Kalung Tali", 79000, "paperclip"],
+      ].map((a) => ({ id: a[0], name: a[1], price: a[2], icon: a[3] }));
+      const $ = (s) => document.querySelector(s),
+        rp = (n) => "Rp " + n.toLocaleString("id-ID");
+      const pn = (a, ic) =>
+        `<div class="pn${a[0] ? " has" : ""}" style="--c:${a[2]};${a[0] ? `background-image:url('${a[0]}')` : ""}" role="img" aria-label="${a[1]}"><i data-lucide="${ic || "image"}"></i><span>${a[1]}</span></div>`;
+      /* slider */
+      const hero = $("#hero");
+      for (let k = 0; k < 5; k++)
+        hero.insertAdjacentHTML(
+          "afterbegin",
+          `<div class="sl" role="group" aria-label="Slide ${k + 1} dari 5">${pn(HERO[2 * k])}${pn(HERO[2 * k + 1])}</div>`,
+        );
+      const S = [...hero.querySelectorAll(".sl")].reverse(),
+        D = $("#dots");
+      D.innerHTML = S.map(
+        (_, k) => `<button aria-label="Ke slide ${k + 1}"></button>`,
+      ).join("");
+      const B = [...D.children];
+      let i = 0,
+        t;
+      const go = (n) => {
+        i = (n + S.length) % S.length;
+        S.forEach((s, k) => s.classList.toggle("on", k == i));
+        B.forEach((b, k) => b.classList.toggle("on", k == i));
+      };
+      const play = () => {
+        clearInterval(t);
+        t = setInterval(() => go(i + 1), 5000);
+      };
+      $("#pv").onclick = () => {
+        go(i - 1);
+        play();
+      };
+      $("#nx").onclick = () => {
+        go(i + 1);
+        play();
+      };
+      B.forEach(
+        (b, k) =>
+          (b.onclick = () => {
+            go(k);
+            play();
+          }),
+      );
+      hero.onmouseenter = () => clearInterval(t);
+      hero.onmouseleave = play;
+      let x0 = 0;
+      hero.ontouchstart = (e) => (x0 = e.touches[0].clientX);
+      hero.ontouchend = (e) => {
+        const d = e.changedTouches[0].clientX - x0;
+        if (Math.abs(d) > 50) {
+          go(i + (d < 0 ? 1 : -1));
+          play();
+        }
+      };
+      go(0);
+      play();
+      /* featured */
+      $("#fe").innerHTML = FEAT.map(
+        (a) =>
+          `<a class="fe" href="jurnal.html">${pn(a, a[5])}<div class="cp"><span class="tp">${a[3]}</span><h3>${a[4]}</h3></div></a>`,
+      ).join("");
+      /* produk */
+      $("#fp").innerHTML = PROD.map(
+        (p) =>
+          `<div class="col-6 col-md-4 col-xl-3"><article class="pc fp"><div class="tile"><i data-lucide="${p.icon}"></i></div><div class="nm">${p.name}</div><div class="pr mono">${rp(p.price)}</div><button class="btn-r" data-id="${p.id}">TAMBAH KE KERANJANG</button></article></div>`,
+      ).join("");
+      $("#fp").onclick = (e) => {
+        const b = e.target.closest("[data-id]");
+        if (b)
+          Cart.add(
+            PROD.find((p) => p.id == b.dataset.id),
+            b,
+          );
+      };
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
